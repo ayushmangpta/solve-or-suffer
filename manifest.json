@@ -16,7 +16,13 @@
     "scripts": ["background.js"]
   },
   "action": {
-    "default_popup": "popup/popup.html"
+    "default_popup": "popup/popup.html",
+    "default_icon": "logoclean.png"
+  },
+  "icons": {
+    "16": "logoclean.png",
+    "48": "logoclean.png",
+    "128": "logoclean.png"
   },
   "content_scripts": [
     {

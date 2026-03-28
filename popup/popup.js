@@ -70,13 +70,18 @@ async function loadCollections() {
   list.innerHTML = "";
 
   collections.forEach(col => {
+    const isEnabled = col.enabled !== false; // true by default
     const div = document.createElement("div");
     div.className = "collection-item";
     div.innerHTML = `
-      <strong>${col.name}</strong> (${col.problems.length} problems)
-      <button class="add-prob-btn" data-id="${col.id}">Add</button>
-      <button class="del-col-btn" data-id="${col.id}">X</button>
-      <div class="problems-list"></div>
+      <div class="collection-header">
+        <input type="checkbox" class="col-enable-cb" data-id="${col.id}" ${isEnabled ? "checked" : ""} title="Enable this collection">
+        <strong style="cursor:pointer;" class="col-title" data-id="${col.id}" title="Click to expand/collapse">&#9654; ${col.name}</strong> 
+        <span style="font-size: 0.85em; opacity: 0.8;">(${col.problems.length})</span>
+        <button class="add-prob-btn" data-id="${col.id}">+</button>
+        <button class="del-col-btn" data-id="${col.id}" style="background:#ff4d4d; padding:2px 6px;">X</button>
+      </div>
+      <div class="problems-list hidden" id="probs-${col.id}"></div>
     `;
 
     const probList = div.querySelector(".problems-list");
@@ -94,6 +99,25 @@ async function loadCollections() {
   });
 
   // Attach events
+  document.querySelectorAll(".col-enable-cb").forEach(cb => {
+    cb.addEventListener("change", async (e) => {
+      await toggleCollectionStatus(e.target.dataset.id, e.target.checked);
+    });
+  });
+
+  document.querySelectorAll(".col-title").forEach(title => {
+    title.addEventListener("click", (e) => {
+      const colId = e.target.dataset.id;
+      const probList = document.getElementById(`probs-${colId}`);
+      if (probList) {
+        probList.classList.toggle("hidden");
+        const isHidden = probList.classList.contains("hidden");
+        const col = collections.find(c => c.id === colId);
+        e.target.innerHTML = (isHidden ? "&#9654; " : "&#9660; ") + col.name;
+      }
+    });
+  });
+
   document.querySelectorAll(".del-col-btn").forEach(btn => {
     btn.addEventListener("click", async (e) => {
       if(confirm("Delete collection?")) {
@@ -179,6 +203,16 @@ async function deleteCollection(id) {
   let collections = data.collections || [];
   collections = collections.filter(c => c.id !== id);
   await browser.storage.local.set({ collections });
+}
+
+async function toggleCollectionStatus(id, enabled) {
+  const data = await browser.storage.local.get("collections");
+  const collections = data.collections || [];
+  const col = collections.find(c => c.id === id);
+  if (col) {
+    col.enabled = enabled;
+    await browser.storage.local.set({ collections });
+  }
 }
 
 async function addProblem(colId, problem) {

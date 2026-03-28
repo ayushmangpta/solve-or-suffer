@@ -62,6 +62,17 @@ button:hover {
   border-radius: 4px;
 }
 
+.collection-header {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 5px;
+}
+
+.collection-header strong {
+  flex-grow: 1;
+}
+
 .problem-item {
   display: flex;
   justify-content: space-between;
@@ -78,4 +89,21 @@ button:hover {
   display: inline-block;
   margin-bottom: 15px;
   color: #4da6ff;
+}
+
+.logo-container {
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.big-logo {
+  width: 80%;        /* or try 30%–50% */   /* optional cap */
+  height: auto;
+  opacity: 0.8;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.big-logo:hover {
+  opacity: 1;
 }

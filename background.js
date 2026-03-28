@@ -35,7 +35,7 @@ async function triggerLock() {
   const collections = data.collections || [];
   
   let allProblems = [];
-  collections.forEach(c => allProblems.push(...(c.problems || [])));
+  collections.filter(c => c.enabled !== false).forEach(c => allProblems.push(...(c.problems || [])));
 
   if (allProblems.length === 0) {
     console.log("No problems available to lock.");
