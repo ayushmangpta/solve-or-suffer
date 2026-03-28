@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "Solve Or Suffer",
+  "version": "1.0",
+  "description": "Forces you to solve a random LeetCode problem twice a day by locking your browser.",
+  "permissions": [
+    "storage",
+    "alarms",
+    "webNavigation",
+    "tabs"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "action": {
+    "default_popup": "popup/popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://leetcode.com/*", "*://www.leetcode.com/*"],
+      "css": ["content/content.css"],
+      "js": ["content/content.js"]
+    }
+  ]
+}

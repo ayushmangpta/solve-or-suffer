@@ -1,0 +1,27 @@
+#solve-or-suffer-overlay {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999999;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  border: 1px solid #4da6ff;
+}
+
+#solve-or-suffer-btn {
+  background: #0078D7;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#solve-or-suffer-btn:hover {
+  background: #005A9E;
+}
