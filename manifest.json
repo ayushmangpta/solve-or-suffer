@@ -3,6 +3,17 @@
   "name": "Solve Or Suffer",
   "version": "1.0",
   "description": "Forces you to solve a random LeetCode problem twice a day by locking your browser.",
+
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "solve-or-suffer@addon",
+      "data_collection_permissions": {
+      "required": [],
+      "optional": []
+      }
+    }
+  },
+
   "permissions": [
     "storage",
     "alarms",
@@ -20,9 +31,9 @@
     "default_icon": "logoclean.png"
   },
   "icons": {
-    "16": "logoclean.png",
-    "48": "logoclean.png",
-    "128": "logoclean.png"
+    "16": "16logoclean.png",
+    "48": "48logoclean.png",
+    "128": "128logoclean.png"
   },
   "content_scripts": [
     {
