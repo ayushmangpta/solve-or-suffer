@@ -10,6 +10,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Tabs
   document.getElementById("tabCollections").addEventListener("click", () => switchTab("collectionsView"));
+  document.getElementById("tabDefaults").addEventListener("click", () => {
+    switchTab("defaultCollectionsView");
+    loadDefaultCollections();
+  });
   document.getElementById("tabUpload").addEventListener("click", () => {
     // Firefox closes popups when file choosers open. 
     // To fix this, we open the extension page in a full tab to handle uploads.
@@ -57,10 +61,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 function switchTab(tabId) {
   document.getElementById("collectionsView").classList.add("hidden");
   document.getElementById("uploadView").classList.add("hidden");
+  document.getElementById("defaultCollectionsView").classList.add("hidden");
   document.getElementById(tabId).classList.remove("hidden");
   
   document.getElementById("tabCollections").classList.toggle("active", tabId === "collectionsView");
   document.getElementById("tabUpload").classList.toggle("active", tabId === "uploadView");
+  document.getElementById("tabDefaults").classList.toggle("active", tabId === "defaultCollectionsView");
 }
 
 async function loadCollections() {
@@ -294,5 +300,94 @@ async function deleteProblem(colId, probIdx) {
   if (col) {
     col.problems.splice(probIdx, 1);
     await browser.storage.local.set({ collections });
+  }
+}
+let allDefaultCollections = [];
+
+function renderDefaultCollections(list) {
+  const container = document.getElementById('defaultCollectionsList');
+  container.textContent = '';
+  list.forEach(col => {
+    const div = document.createElement('div');
+    div.style.display = 'flex';
+    div.style.alignItems = 'center';
+    div.style.justifyContent = 'space-between';
+    div.style.marginBottom = '5px';
+    div.style.paddingBottom = '5px';
+    div.style.borderBottom = '1px solid #444';
+
+    const title = document.createElement('span');
+    title.textContent = col.name;
+    title.style.fontWeight = 'bold';
+    
+    const btnGrp = document.createElement('div');
+    
+    const previewBtn = document.createElement('button');
+    previewBtn.textContent = 'Preview';
+    previewBtn.style.marginRight = '5px';
+    previewBtn.addEventListener('click', () => previewDefaultCollection(col));
+
+    const addBtn = document.createElement('button');
+    addBtn.textContent = 'Add';
+    addBtn.addEventListener('click', () => addDefaultCollection(col));
+
+    btnGrp.append(previewBtn, addBtn);
+    div.append(title, btnGrp);
+    container.appendChild(div);
+  });
+}
+
+async function loadDefaultCollections() {
+  if (allDefaultCollections.length === 0) {
+    try {
+      const res = await fetch(browser.runtime.getURL('default_collections/index.json'));
+      if (!res.ok) throw new Error('Network error');
+      allDefaultCollections = await res.json();
+    } catch(err) {
+      console.error(err);
+      alert("Failed to load default collections. Make sure index.json is present.");
+      return;
+    }
+  }
+
+  const searchInput = document.getElementById('defaultSearchInput');
+  
+  if (!searchInput.dataset.initialized) {
+    searchInput.dataset.initialized = 'true';
+    searchInput.addEventListener('input', (e) => {
+      const val = e.target.value.toLowerCase();
+      const filtered = allDefaultCollections.filter(c => c.name.toLowerCase().includes(val));
+      renderDefaultCollections(filtered);
+    });
+  }
+  
+  renderDefaultCollections(allDefaultCollections);
+}
+
+function previewDefaultCollection(col) {
+  alert(`Collection: ${col.name}\nTotal Problems: ${col.problems.length}\nAvailable to add to your collections.`);
+}
+
+async function addDefaultCollection(col) {
+  try {
+    const data = await browser.storage.local.get('collections');
+    let collections = data.collections || [];
+    
+    let finalName = col.name;
+    if (collections.find(c => c.name === finalName)) {
+      const ok = confirm(`A collection named '${finalName}' already exists. Do you want to import it as '${finalName} (Imported)'?`);
+      if (!ok) return;
+      finalName = `${finalName} (Imported)`;
+    }
+    
+    const id = Date.now().toString();
+    collections.push({ id, name: finalName, problems: col.problems });
+    await browser.storage.local.set({ collections });
+    
+    alert(`Successfully imported ${finalName} with ${col.problems.length} problems!`);
+    loadCollections();
+    switchTab('collectionsView');
+  } catch (err) {
+    alert('Failed to import: ' + err.message);
   }
 }
