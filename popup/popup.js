@@ -122,8 +122,12 @@ async function loadCollections() {
       
       const a = document.createElement("a");
       a.href = p.link;
-      a.target = "_blank";
       a.textContent = p.name;
+      a.style.cursor = "pointer";
+      a.addEventListener("click", (e) => {
+        e.preventDefault();
+        browser.tabs.create({ url: p.link });
+      });
       
       const btnDelProb = document.createElement("button");
       btnDelProb.className = "del-prob-btn";
