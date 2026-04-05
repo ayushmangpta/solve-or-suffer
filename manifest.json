@@ -8,8 +8,7 @@
     "gecko": {
       "id": "solve-or-suffer@addon",
       "data_collection_permissions": {
-      "required": [],
-      "optional": []
+      "required": ["none"]
       }
     }
   },
