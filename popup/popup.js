@@ -206,9 +206,21 @@ function handleCSVUpload() {
     const lines = text.split('\n').map(l => l.trim()).filter(l => l);
     const problems = [];
     
-    // Parse extremely basic CSV (name, link)
-    for (const line of lines) {
-      const parts = line.split(',');
+    if (lines.length < 2) {
+      status.innerText = "Invalid CSV: Must contain a header and data.";
+      return;
+    }
+
+    // Validate schema
+    const headers = lines[0].split(',').map(h => h.trim().replace(/^["']|["']$/g, '').toLowerCase());
+    if (headers[0] !== "problem_name" || headers[1] !== "problem_link") {
+      status.innerText = "Invalid schema. Header must be exactly: problem_name,problem_link";
+      return;
+    }
+
+    // Parse data from the second row
+    for (let i = 1; i < lines.length; i++) {
+      const parts = lines[i].split(',');
       if (parts.length >= 2) {
         const name = parts[0].trim().replace(/^["']|["']$/g, '');
         let link = parts[1].trim().replace(/^["']|["']$/g, '');
@@ -216,7 +228,13 @@ function handleCSVUpload() {
         // Clean up any trailing commas or garbage that might be at the end of the line
         link = link.replace(/,+$/, '').trim();
 
-        problems.push({ name, link });
+        // Validate the link URL
+        try {
+          new URL(link);
+          problems.push({ name, link });
+        } catch (err) {
+          // Skip the problem if the link isn't a valid URL
+        }
       }
     }
 
