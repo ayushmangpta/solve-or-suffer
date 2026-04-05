@@ -67,31 +67,71 @@ async function loadCollections() {
   const data = await browser.storage.local.get("collections");
   const collections = data.collections || [];
   const list = document.getElementById("collectionsList");
-  list.innerHTML = "";
+  list.textContent = "";
 
   collections.forEach(col => {
     const isEnabled = col.enabled !== false; // true by default
     const div = document.createElement("div");
     div.className = "collection-item";
-    div.innerHTML = `
-      <div class="collection-header">
-        <input type="checkbox" class="col-enable-cb" data-id="${col.id}" ${isEnabled ? "checked" : ""} title="Enable this collection">
-        <strong style="cursor:pointer;" class="col-title" data-id="${col.id}" title="Click to expand/collapse">&#9654; ${col.name}</strong> 
-        <span style="font-size: 0.85em; opacity: 0.8;">(${col.problems.length})</span>
-        <button class="add-prob-btn" data-id="${col.id}">+</button>
-        <button class="del-col-btn" data-id="${col.id}" style="background:#ff4d4d; padding:2px 6px;">X</button>
-      </div>
-      <div class="problems-list hidden" id="probs-${col.id}"></div>
-    `;
+    
+    const header = document.createElement("div");
+    header.className = "collection-header";
+    
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.className = "col-enable-cb";
+    checkbox.dataset.id = col.id;
+    checkbox.checked = isEnabled;
+    checkbox.title = "Enable this collection";
+    
+    const strong = document.createElement("strong");
+    strong.style.cursor = "pointer";
+    strong.className = "col-title";
+    strong.dataset.id = col.id;
+    strong.title = "Click to expand/collapse";
+    strong.textContent = `\u25B6 ${col.name}`;
+    
+    const span = document.createElement("span");
+    span.style.fontSize = "0.85em";
+    span.style.opacity = "0.8";
+    span.textContent = `(${col.problems.length})`;
+    
+    const btnAdd = document.createElement("button");
+    btnAdd.className = "add-prob-btn";
+    btnAdd.dataset.id = col.id;
+    btnAdd.textContent = "+";
+    
+    const btnDel = document.createElement("button");
+    btnDel.className = "del-col-btn";
+    btnDel.dataset.id = col.id;
+    btnDel.style.background = "#ff4d4d";
+    btnDel.style.padding = "2px 6px";
+    btnDel.textContent = "X";
+    
+    header.append(checkbox, strong, " ", span, " ", btnAdd, " ", btnDel);
+    
+    const probList = document.createElement("div");
+    probList.className = "problems-list hidden";
+    probList.id = `probs-${col.id}`;
+    
+    div.append(header, probList);
 
-    const probList = div.querySelector(".problems-list");
     col.problems.forEach((p, idx) => {
       const pDiv = document.createElement("div");
       pDiv.className = "problem-item";
-      pDiv.innerHTML = `
-        <a href="${p.link}" target="_blank">${p.name}</a>
-        <button class="del-prob-btn" data-col="${col.id}" data-idx="${idx}">x</button>
-      `;
+      
+      const a = document.createElement("a");
+      a.href = p.link;
+      a.target = "_blank";
+      a.textContent = p.name;
+      
+      const btnDelProb = document.createElement("button");
+      btnDelProb.className = "del-prob-btn";
+      btnDelProb.dataset.col = col.id;
+      btnDelProb.dataset.idx = idx;
+      btnDelProb.textContent = "x";
+      
+      pDiv.append(a, " ", btnDelProb);
       probList.appendChild(pDiv);
     });
 
@@ -113,7 +153,7 @@ async function loadCollections() {
         probList.classList.toggle("hidden");
         const isHidden = probList.classList.contains("hidden");
         const col = collections.find(c => c.id === colId);
-        e.target.innerHTML = (isHidden ? "&#9654; " : "&#9660; ") + col.name;
+        e.target.textContent = (isHidden ? "\u25B6 " : "\u25BC ") + col.name;
       }
     });
   });
