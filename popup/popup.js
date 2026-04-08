@@ -340,12 +340,20 @@ function renderDefaultCollections(list) {
 async function loadDefaultCollections() {
   if (allDefaultCollections.length === 0) {
     try {
-      const res = await fetch(browser.runtime.getURL('default_collections/index.json'));
-      if (!res.ok) throw new Error('Network error');
+      const remoteUrl = 'https://raw.githubusercontent.com/ayushmangpta/solve-or-suffer/refs/heads/main/default_collections/index-1.json';
+      let res;
+      try {
+        res = await fetch(remoteUrl);
+        if (!res.ok) throw new Error('Network error from remote');
+      } catch (remoteErr) {
+        console.warn('Failed to fetch remote default collections, falling back to local.', remoteErr);
+        res = await fetch(browser.runtime.getURL('default_collections/index-1.json'));
+        if (!res.ok) throw new Error('Network error from local fallback');
+      }
       allDefaultCollections = await res.json();
     } catch(err) {
       console.error(err);
-      alert("Failed to load default collections. Make sure index.json is present.");
+      alert("Failed to load default collections. Make sure you are connected to the internet or index-1.json is present locally.");
       return;
     }
   }
