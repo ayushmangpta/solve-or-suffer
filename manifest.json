@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Solve Or Suffer",
   "version": "1.1",
-  "description": "Forces you to solve a random LeetCode problem twice a day by locking your browser.",
+  "description": "Forces you to solve a random coding problem (LeetCode/GeeksForGeeks) twice a day by locking your browser.",
 
   "browser_specific_settings": {
     "gecko": {
@@ -36,7 +36,12 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://leetcode.com/*", "*://www.leetcode.com/*"],
+      "matches": [
+        "*://leetcode.com/*",
+        "*://www.leetcode.com/*",
+        "*://geeksforgeeks.org/problems/*",
+        "*://www.geeksforgeeks.org/problems/*"
+      ],
       "css": ["content/content.css"],
       "js": ["content/content.js"]
     }

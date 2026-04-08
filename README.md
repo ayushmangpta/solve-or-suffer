@@ -1,6 +1,6 @@
 # Solve Or Suffer
 
-Forces you to solve a random LeetCode problem twice a day by locking your browser. Keep your skills sharp and stay consistent with your coding practice.
+Forces you to solve a random coding problem (LeetCode/GeeksForGeeks) twice a day by locking your browser. Keep your skills sharp and stay consistent with your coding practice.
 
 ### Download
 
@@ -8,7 +8,7 @@ Available for Firefox: [Get Solve Or Suffer on Firefox Add-ons](https://addons.m
 
 ### Features
 
-* Locks your browser to enforce answering a LeetCode problem.
+* Locks your browser to enforce answering a coding problem.
 * Triggers twice a day to ensure consistent coding habits.
 * Minimal, focused design.
 
@@ -23,7 +23,7 @@ Available for Firefox: [Get Solve Or Suffer on Firefox Add-ons](https://addons.m
 
 * `manifest.json`: Configuration and metadata for the extension.
 * `background.js`: Handles alarms, storage, and logic.
-* `content/`: Scripts and styles injected into LeetCode.
+* `content/`: Scripts and styles injected into coding platforms.
 * `popup/`: UI for the extension's popup action.
 
 ### Permissions Used

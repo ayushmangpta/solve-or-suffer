@@ -180,7 +180,7 @@ async function loadCollections() {
   document.querySelectorAll(".add-prob-btn").forEach(btn => {
     btn.addEventListener("click", async (e) => {
       const name = prompt("Problem Name:");
-      const link = prompt("LeetCode Link:");
+      const link = prompt("Problem Link (LeetCode/GeeksForGeeks):");
       if (name && link) {
         await addProblem(e.target.dataset.id, { name, link });
         loadCollections();

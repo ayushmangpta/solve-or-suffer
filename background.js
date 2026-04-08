@@ -67,7 +67,7 @@ function enforceLock(tabId, url) {
       return;
     }
 
-    if (!targetUrl.hostname.includes("leetcode.com")) {
+    if (!targetUrl.hostname.includes("leetcode.com") && !targetUrl.hostname.includes("geeksforgeeks.org")) {
       browser.tabs.update(tabId, { url: currentProblemUrl });
     }
   } catch (e) {
