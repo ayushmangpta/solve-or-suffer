@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Solve Or Suffer",
-  "version": "1.2",
+  "version": "1.3",
   "description": "Forces you to solve a random coding problem (LeetCode/GeeksForGeeks) twice a day by locking your browser.",
 
   "browser_specific_settings": {

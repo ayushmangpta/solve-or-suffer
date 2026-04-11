@@ -14,6 +14,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     switchTab("defaultCollectionsView");
     loadDefaultCollections();
   });
+  document.getElementById("tabSettings").addEventListener("click", async () => {
+    switchTab("settingsView");
+    const data = await browser.storage.local.get("problemsPerDay");
+    document.getElementById("problemsPerDay").value = data.problemsPerDay || 2;
+  });
   document.getElementById("tabUpload").addEventListener("click", () => {
     // Firefox closes popups when file choosers open. 
     // To fix this, we open the extension page in a full tab to handle uploads.
@@ -56,17 +61,29 @@ document.addEventListener("DOMContentLoaded", async () => {
       window.close(); // close popup/tab
     });
   }
+
+  // Save Settings
+  document.getElementById("saveSettingsBtn").addEventListener("click", async () => {
+    const problemsPerDay = parseInt(document.getElementById("problemsPerDay").value) || 2;
+    await browser.storage.local.set({ problemsPerDay });
+    document.getElementById("settingsStatus").textContent = "Saved!";
+    setTimeout(() => { document.getElementById("settingsStatus").textContent = ""; }, 2000);
+    // Notify background script to reschedule
+    await browser.runtime.sendMessage({ action: "rescheduleLock" });
+  });
 });
 
 function switchTab(tabId) {
   document.getElementById("collectionsView").classList.add("hidden");
   document.getElementById("uploadView").classList.add("hidden");
   document.getElementById("defaultCollectionsView").classList.add("hidden");
+  document.getElementById("settingsView").classList.add("hidden");
   document.getElementById(tabId).classList.remove("hidden");
   
   document.getElementById("tabCollections").classList.toggle("active", tabId === "collectionsView");
   document.getElementById("tabUpload").classList.toggle("active", tabId === "uploadView");
   document.getElementById("tabDefaults").classList.toggle("active", tabId === "defaultCollectionsView");
+  document.getElementById("tabSettings").classList.toggle("active", tabId === "settingsView");
 }
 
 async function loadCollections() {

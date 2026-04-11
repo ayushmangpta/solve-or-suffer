@@ -18,9 +18,18 @@ browser.runtime.onInstalled.addListener(() => {
 });
 
 function scheduleNextLock() {
-  // Random time between 8 and 16 hours
-  const delayInMinutes = Math.floor(Math.random() * (16 - 8 + 1) + 8) * 60; 
-  browser.alarms.create("triggerLock", { delayInMinutes });
+  browser.storage.local.get("problemsPerDay").then((data) => {
+    const problemsPerDay = data.problemsPerDay || 2;
+    // Calculate average interval in minutes
+    const averageIntervalMinutes = (24 * 60) / Math.max(1, Math.min(24, problemsPerDay));
+    
+    // Add some randomness (between 60% and 120% of the average)
+    const minDelay = averageIntervalMinutes * 0.6;
+    const maxDelay = averageIntervalMinutes * 1.2;
+    const delayInMinutes = Math.floor(Math.random() * (maxDelay - minDelay + 1) + minDelay);
+    
+    browser.alarms.create("triggerLock", { delayInMinutes });
+  });
 }
 
 browser.alarms.onAlarm.addListener((alarm) => {
@@ -112,6 +121,10 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     sendResponse({ isLocked, currentProblemUrl });
   } else if (message.action === "forceLock") {
     triggerLock();
+    sendResponse({ success: true });
+  } else if (message.action === "rescheduleLock") {
+    browser.alarms.clear("triggerLock");
+    scheduleNextLock();
     sendResponse({ success: true });
   }
 });
