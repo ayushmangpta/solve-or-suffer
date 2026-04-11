@@ -1,15 +1,25 @@
 let isLocked = false;
 let currentProblemUrl = "";
 
+// 1. Initialize state immediately when background script wakes up
+browser.storage.local.get(["isLocked", "currentProblemUrl", "nextLockTime"]).then((data) => {
+  if (data.isLocked) {
+    isLocked = data.isLocked;
+    currentProblemUrl = data.currentProblemUrl;
+  }
+  
+  // 3. Catch missed alarms during browser downtime
+  if (!isLocked && data.nextLockTime && Date.now() >= data.nextLockTime) {
+    triggerLock();
+    scheduleNextLock();
+  }
+});
+
 // Initialize storage and alarms
 browser.runtime.onInstalled.addListener(() => {
-  browser.storage.local.get(["collections", "isLocked", "currentProblemUrl"]).then((data) => {
+  browser.storage.local.get(["collections"]).then((data) => {
     if (!data.collections) {
       browser.storage.local.set({ collections: [] });
-    }
-    if (data.isLocked) {
-      isLocked = data.isLocked;
-      currentProblemUrl = data.currentProblemUrl;
     }
   });
 
@@ -27,6 +37,10 @@ function scheduleNextLock() {
     const minDelay = averageIntervalMinutes * 0.6;
     const maxDelay = averageIntervalMinutes * 1.2;
     const delayInMinutes = Math.floor(Math.random() * (maxDelay - minDelay + 1) + minDelay);
+    
+    // Save the expected trigger time to catch missed alarms
+    const nextLockTime = Date.now() + delayInMinutes * 60 * 1000;
+    browser.storage.local.set({ nextLockTime });
     
     browser.alarms.create("triggerLock", { delayInMinutes });
   });
